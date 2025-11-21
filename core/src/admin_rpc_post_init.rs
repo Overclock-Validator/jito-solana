@@ -85,6 +85,6 @@ pub struct AdminRpcRequestMetadataPostInit {
     pub node: Option<Arc<NodeMultihoming>>,
     pub block_engine_config: Arc<Mutex<BlockEngineConfig>>,
     pub relayer_config: Arc<Mutex<RelayerConfig>>,
-    pub shred_receiver_address: Arc<ArcSwap<Option<SocketAddr>>>,
-    pub shred_retransmit_receiver_address: Arc<ArcSwap<Option<SocketAddr>>>,
+    pub shred_receiver_addresses: Arc<ArcSwap<Vec<SocketAddr>>>,
+    pub shred_retransmit_receiver_addresses: Arc<ArcSwap<Vec<SocketAddr>>>,
 }

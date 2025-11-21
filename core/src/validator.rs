@@ -311,8 +311,8 @@ pub struct ValidatorConfig {
     // jito configuration
     pub relayer_config: Arc<Mutex<RelayerConfig>>,
     pub block_engine_config: Arc<Mutex<BlockEngineConfig>>,
-    pub shred_receiver_address: Arc<ArcSwap<Option<SocketAddr>>>,
-    pub shred_retransmit_receiver_address: Arc<ArcSwap<Option<SocketAddr>>>,
+    pub shred_receiver_addresses: Arc<ArcSwap<Vec<SocketAddr>>>,
+    pub shred_retransmit_receiver_addresses: Arc<ArcSwap<Vec<SocketAddr>>>,
     pub tip_manager_config: TipManagerConfig,
     pub preallocated_bundle_cost: u64,
     pub bam_url: Arc<Mutex<Option<String>>>,
@@ -399,8 +399,8 @@ impl ValidatorConfig {
             repair_handler_type: RepairHandlerType::default(),
             relayer_config: Arc::new(Mutex::new(RelayerConfig::default())),
             block_engine_config: Arc::new(Mutex::new(BlockEngineConfig::default())),
-            shred_receiver_address: Arc::new(ArcSwap::from_pointee(None)),
-            shred_retransmit_receiver_address: Arc::new(ArcSwap::from_pointee(None)),
+            shred_receiver_addresses: Arc::new(ArcSwap::from_pointee(vec![])),
+            shred_retransmit_receiver_addresses: Arc::new(ArcSwap::from_pointee(vec![])),
             tip_manager_config: TipManagerConfig::default(),
             preallocated_bundle_cost: 0,
             bam_url: Arc::new(Mutex::new(None)),
@@ -1607,7 +1607,7 @@ impl Validator {
             wen_restart_repair_slots.clone(),
             slot_status_notifier,
             vote_connection_cache,
-            config.shred_retransmit_receiver_address.clone(),
+            config.shred_retransmit_receiver_addresses.clone(),
         )
         .map_err(ValidatorError::Other)?;
 
@@ -1704,7 +1704,7 @@ impl Validator {
             config.block_engine_config.clone(),
             config.relayer_config.clone(),
             config.tip_manager_config.clone(),
-            config.shred_receiver_address.clone(),
+            config.shred_receiver_addresses.clone(),
             config.preallocated_bundle_cost,
             config.bam_url.clone(),
         );
@@ -1743,8 +1743,8 @@ impl Validator {
             node: Some(Arc::new(node_multihoming)),
             block_engine_config: config.block_engine_config.clone(),
             relayer_config: config.relayer_config.clone(),
-            shred_receiver_address: config.shred_receiver_address.clone(),
-            shred_retransmit_receiver_address: config.shred_retransmit_receiver_address.clone(),
+            shred_receiver_addresses: config.shred_receiver_addresses.clone(),
+            shred_retransmit_receiver_addresses: config.shred_retransmit_receiver_addresses.clone(),
         });
 
         Ok(Self {
